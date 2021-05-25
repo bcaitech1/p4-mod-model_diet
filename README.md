@@ -1,5 +1,7 @@
 # boostcamp_pstage10
-
+김연세, 윤석진, 이상건, 이용우, 한웅희, 황훈
+<br>
+<img src=https://github.com/bcaitech1/p4-mod-model_diet/blob/main/Diet.gif>
 # Docker
 ```bash
 docker run -it --gpus all --ipc=host -v $PWD:/opt/ml/code -v ${dataset}:/opt/ml/data placidus36/pstage4_lightweight:v0.1 /bin/bash
