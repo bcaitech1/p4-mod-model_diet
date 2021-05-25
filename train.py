@@ -50,6 +50,7 @@ def train(
     print(f"macs: {macs}")
 
     # sglee 브랜치 테스트.
+    # sglee487 브랜치 테스트.
     # Create optimizer, scheduler, criterion
     optimizer = torch.optim.SGD(model_instance.model.parameters(), lr=data_config["INIT_LR"], momentum=0.9)
                 # adamp.AdamP(model_instance.model.parameters(), lr=data_config["INIT_LR"], weight_decay = 1e-5)
