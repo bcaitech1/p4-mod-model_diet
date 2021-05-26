@@ -1,0 +1,14 @@
+input_channel: 3
+
+depth_multiple: 1.0
+width_multiple: 1.0
+
+backbone:
+    # [repeat, module, args]
+    [
+        # Conv argument: [out_channel, kernel_size, stride, padding_size]
+        # if padding_size is not given or null, the padding_size will be auto adjusted as padding='SAME' in TensorFlow
+        # k t c SE HS s
+        [1, Flatten, []],        
+        [1, Linear, [9]]
+    ]

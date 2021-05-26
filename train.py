@@ -20,7 +20,12 @@ from src.trainer import TorchTrainer
 from src.utils.common import get_label_counts, read_yaml
 from src.utils.macs import calc_macs
 from src.utils.torch_utils import check_runtime, model_info
-
+import adamp
+import timm
+class mymodel:
+    def __init__(self, model):
+        self.model = model
+    
 def train(
     model_config: Dict[str, Any],
     data_config: Dict[str, Any],
@@ -36,6 +41,8 @@ def train(
         yaml.dump(model_config, f, default_flow_style=False)
 
     model_instance = Model(model_config, verbose=True)
+    print(model_instance.model)
+#    timm.create_model(model_name='resnetv2_101x1_bitm',pretrained=True,num_classes=9)
     model_path = os.path.join(log_dir, "best.pt")
     print(f"Model save path: {model_path}")
     if os.path.isfile(model_path):
