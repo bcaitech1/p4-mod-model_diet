@@ -1,0 +1,1 @@
+RuntimeError: Given input size: (16x1x1). Calculated output size: (16x0x0). Output size is too small

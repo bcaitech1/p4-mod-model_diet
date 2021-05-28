@@ -109,6 +109,7 @@ class TorchTrainer:
         self,
         train_dataloader: DataLoader,
         n_epoch: int,
+        metric,
         val_dataloader: Optional[DataLoader] = None,
     ) -> Tuple[float, float]:
         """Train model.
@@ -121,10 +122,13 @@ class TorchTrainer:
         Returns:
             loss and accuracy
         """
+
         best_test_acc = -1.0
         best_test_f1 = -1.0
+        best_score = float('inf')
         num_classes = _get_len_label_from_dataset(train_dataloader.dataset)
         label_list = [i for i in range(num_classes)]
+        
 
         for epoch in range(n_epoch):
             running_loss, correct, total = 0.0, 0, 0
@@ -169,14 +173,18 @@ class TorchTrainer:
                 )
             pbar.close()
 
-            _, test_f1, test_acc = self.test(
+            test_loss, test_f1, test_acc = self.test(
                 model=self.model, test_dataloader=val_dataloader
             )
-            if best_test_f1 > test_f1:
+
+            test_score = metric(test_f1, epoch)
+            
+            if best_score < test_score:
                 continue
             best_test_acc = test_acc
             best_test_f1 = test_f1
-            print(f"Model saved. Current best test f1: {best_test_f1:.3f}")
+            best_score = test_score
+            print(f"Model saved. Current best score: {best_score:.3f}")
             save_model(
                 model=self.model,
                 path=self.model_path,
@@ -184,7 +192,7 @@ class TorchTrainer:
                 device=self.device,
             )
 
-        return best_test_acc, best_test_f1
+        return best_test_acc, best_test_f1, best_score
 
     @torch.no_grad()
     def test(
@@ -241,6 +249,7 @@ class TorchTrainer:
         f1 = f1_score(
             y_true=gt, y_pred=preds, labels=label_list, average="macro", zero_division=0
         )
+
         return loss, f1, accuracy
 
 

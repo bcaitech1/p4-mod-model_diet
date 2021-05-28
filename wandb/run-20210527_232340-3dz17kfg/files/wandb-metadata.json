@@ -1,0 +1,24 @@
+{
+    "os": "Linux-4.4.0-210-generic-x86_64-with-glibc2.10",
+    "python": "3.8.5",
+    "heartbeatAt": "2021-05-27T23:23:41.853049",
+    "startedAt": "2021-05-27T23:23:40.848077",
+    "docker": null,
+    "gpu": "Tesla P40",
+    "gpu_count": 1,
+    "cpu_count": 4,
+    "cuda": "10.1.243",
+    "args": [],
+    "state": "running",
+    "program": "train_optuna_wandb.py",
+    "codePath": "train_optuna_wandb.py",
+    "git": {
+        "remote": "git@github.com:bcaitech1/p4-mod-model_diet.git",
+        "commit": "4c1c51b8bdf0a8a238210d112446fb3b62b4c5e7"
+    },
+    "email": null,
+    "root": "/opt/ml/gitclone/p4-mod-model_diet",
+    "host": "b16d9adc1d98",
+    "username": "root",
+    "executable": "/usr/bin/python"
+}

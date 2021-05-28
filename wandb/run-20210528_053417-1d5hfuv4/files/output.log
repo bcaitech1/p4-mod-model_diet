@@ -1,0 +1,1 @@
+[32m[I 2021-05-28 05:47:16,507][39m Trial 4 finished with value: 9.376325273796143 and parameters: {'img_size': 288.0, 'batch_size': 16, 'lr': 0.0017182173154235848}. Best is trial 0 with value: 4.699816746528032.

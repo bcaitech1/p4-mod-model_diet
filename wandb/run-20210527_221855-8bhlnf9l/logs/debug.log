@@ -1,0 +1,24 @@
+2021-05-27 22:18:55,396 INFO    MainThread:19605 [wandb_setup.py:_flush():69] setting env: {}
+2021-05-27 22:18:55,396 INFO    MainThread:19605 [wandb_setup.py:_flush():69] setting login settings: {}
+2021-05-27 22:18:55,396 INFO    MainThread:19605 [wandb_init.py:_log_setup():336] Logging user logs to /opt/ml/gitclone/p4-mod-model_diet/wandb/run-20210527_221855-8bhlnf9l/logs/debug.log
+2021-05-27 22:18:55,396 INFO    MainThread:19605 [wandb_init.py:_log_setup():337] Logging internal logs to /opt/ml/gitclone/p4-mod-model_diet/wandb/run-20210527_221855-8bhlnf9l/logs/debug-internal.log
+2021-05-27 22:18:55,396 INFO    MainThread:19605 [wandb_init.py:init():369] calling init triggers
+2021-05-27 22:18:55,396 INFO    MainThread:19605 [wandb_init.py:init():374] wandb.init called with sweep_config: {}
+config: {'img_size': 1, 'batch_size': 32, 'init_lr': 0.0006032637635319348}
+2021-05-27 22:18:55,396 INFO    MainThread:19605 [wandb_init.py:init():418] starting backend
+2021-05-27 22:18:55,396 INFO    MainThread:19605 [backend.py:_multiprocessing_setup():70] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2021-05-27 22:18:55,399 INFO    MainThread:19605 [backend.py:ensure_launched():132] starting backend process...
+2021-05-27 22:18:55,438 INFO    MainThread:19605 [backend.py:ensure_launched():136] started backend process with pid: 20899
+2021-05-27 22:18:55,440 INFO    MainThread:19605 [wandb_init.py:init():423] backend started and connected
+2021-05-27 22:18:55,441 INFO    MainThread:19605 [wandb_init.py:init():465] updated telemetry
+2021-05-27 22:18:55,442 INFO    MainThread:19605 [wandb_init.py:init():484] communicating current version
+2021-05-27 22:18:56,209 INFO    MainThread:19605 [wandb_init.py:init():489] got version response upgrade_message: "wandb version 0.10.31 is available!  To upgrade, please run:\n $ pip install wandb --upgrade"
+
+2021-05-27 22:18:56,209 INFO    MainThread:19605 [wandb_init.py:init():497] communicating run to backend with 30 second timeout
+2021-05-27 22:18:56,433 INFO    MainThread:19605 [wandb_init.py:init():522] starting run threads in backend
+2021-05-27 22:18:56,468 INFO    MainThread:19605 [wandb_run.py:_console_start():1565] atexit reg
+2021-05-27 22:18:56,468 INFO    MainThread:19605 [wandb_run.py:_redirect():1412] redirect: SettingsConsole.REDIRECT
+2021-05-27 22:18:56,468 INFO    MainThread:19605 [wandb_run.py:_redirect():1417] Redirecting console.
+2021-05-27 22:18:56,470 INFO    MainThread:19605 [wandb_run.py:_redirect():1479] Redirects installed.
+2021-05-27 22:18:56,470 INFO    MainThread:19605 [wandb_init.py:init():546] run started, returning control to user process
+2021-05-27 22:28:04,017 INFO    MainThread:19605 [wandb_run.py:finish():1208] finishing run seokjin/optuna/8bhlnf9l

@@ -28,7 +28,6 @@ def train(trial,
     model_config: Dict[str, Any],
     data_config: Dict[str, Any],
     log_dir: str,
-    fp16: bool,
     device: torch.device,
 ) -> Tuple[float, float, float]:
     """Train."""
@@ -52,8 +51,6 @@ def train(trial,
     macs = calc_macs(model_instance.model, (3, data_config["IMG_SIZE"], data_config["IMG_SIZE"]))
     print(f"macs: {macs}")
 
-    # sglee 브랜치 테스트.
-    # sglee487 브랜치 테스트.
     # Create optimizer, scheduler, criterion
     lr = trial.suggest_loguniform('lr', 1e-3, 1e-2)
     optimizer = torch.optim.SGD(model_instance.model.parameters(), lr=lr, momentum=0.9)
@@ -73,7 +70,7 @@ def train(trial,
     )
     # Amp loss scaler
     scaler = (
-        torch.cuda.amp.GradScaler() if fp16 and device != torch.device("cpu") else None
+        torch.cuda.amp.GradScaler() if data_config["FP16"] and device != torch.device("cpu") else None
     )
 
     # Create trainer
@@ -101,7 +98,28 @@ def train(trial,
     return test_loss, test_f1, test_acc
 
 
-def ready(trial):
+class Ready(object):
+    def __init__(self, model_config, data_config):
+        self.model_config = model_config
+        self.data_config = data_config
+        self.log_dir = os.path.join("exp", datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        os.makedirs(self.log_dir, exist_ok=True)
+        pass
+
+    def __call__(self, trial):
+        test_loss, test_f1, test_acc = train(
+            trial,
+            model_config=self.model_config,
+            data_config=self.data_config,
+            log_dir=self.log_dir,
+            device=self.device,
+        )
+
+        return test_f1
+
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train model.")
     parser.add_argument(
         "--model", default="configs/model/mobilenetv3.yaml", type=str, help="model config"
@@ -114,28 +132,11 @@ def ready(trial):
     model_config = read_yaml(cfg=args.model)
     data_config = read_yaml(cfg=args.data)
 
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    log_dir = os.path.join("exp", datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
-    os.makedirs(log_dir, exist_ok=True)
-
-    test_loss, test_f1, test_acc = train(
-        trial,
-        model_config=model_config,
-        data_config=data_config,
-        log_dir=log_dir,
-        fp16=data_config["FP16"],
-        device=device,
-    )
-
-    return test_f1
-
-
-if __name__ == "__main__":
-
+    ready = Ready(model_config, data_config)
     sampler = optuna.samplers.TPESampler()
-
     study = optuna.create_study(sampler=sampler, direction='maximize')
-    study.optimize(func=ready, n_trials=4)
+    study.optimize(ready, n_trials=4)
+
     # save
     with open('mnist_optuna.pkl', 'wb') as f:
         pickle.dump(study, f, pickle.HIGHEST_PROTOCOL)
