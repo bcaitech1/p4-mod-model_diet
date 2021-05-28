@@ -169,7 +169,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     model_config = read_yaml(cfg=args.model)
-    model_config = read_yaml(cfg="configs/model/example.yaml")
     data_config = read_yaml(cfg=args.data)
 
     ready = Ready(model_config, data_config)
