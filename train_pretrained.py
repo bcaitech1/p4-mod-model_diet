@@ -18,21 +18,36 @@ import torchvision.models
 from src.dataloader import create_dataloader
 from src.loss import CustomCriterion
 from src.model import Model
-from src.trainer import TorchTrainer
+from src.trainer_pretrained_wandb import TorchTrainer
 from src.utils.common import get_label_counts, read_yaml
 from src.utils.macs import calc_macs
 from src.utils.torch_utils import check_runtime, model_info
 
-class Shufflenet_v205(nn.Module):
-    def __init__(self, num_classes:int = 9):
-        super().__init__()
-        self.model = torchvision.models.shufflenet_v2_x0_5(pretrained=True)
-        self.model.add_module("last_linear", torch.nn.Linear(1000, num_classes))
+# model_list = [
+#     'alexnet', 'vgg11', 'vgg11_bn', 'vgg13', 'vgg13_bn',
+#     'vgg16', 'vgg19', 'vgg19_bn', 'resnet18', 'resnet34',
+#     'resnet50', 'resnet101', 'resnet152', 'squeezenet1_0', 'squeezenet1_1',
+#     'densenet121', 'densenet169', 'densenet161', 'densenet201', 'inception_v3',
+#     'googlenet', 'shufflenet_v2_x0_5', 'shufflenet_v2_x1_0', 'shufflenet_v2_x1_5',
+#     'shufflenet_v2_x2_0', 'mobilenet_v2', 'mobilenet_v3_large', 'mobilenet_v3_small',
+#     'resnext50_32x4d', 'resnext101_32x8d', 'wide_resnet50_2', 'wide_resnet101_2',
+#     'mnasnet0_5', 'mnasnet0_75', 'mnasnet1_0', 'mnasnet1_3'
+# ]
 
-    def forward(self, x):
-        return self.model(x)
+model_list = [
+    'shufflenet_v2_x0_5', 'shufflenet_v2_x1_0', 'shufflenet_v2_x1_5', 'shufflenet_v2_x2_0',
+    'mobilenet_v2', 'mobilenet_v3_large', 'mobilenet_v3_small',
+    'resnet18', 'resnet50', 'squeezenet1_1',
+    'mnasnet0_5', 'mnasnet0_75', 'mnasnet1_0', 'mnasnet1_3'
+    'densenet169', 'densenet161', 'densenet201', 'inception_v3',
+    'googlenet',
+    'resnext50_32x4d',
+]
 
 def train_pretrained(
+    model_name: str,
+    from_pretrained: str,
+    log_name: str,
     model_config: None,
     data_config: Dict[str, Any],
     log_dir: str,
@@ -46,7 +61,14 @@ def train_pretrained(
     with open(os.path.join(log_dir, 'model.yml'), 'w') as f:
         yaml.dump(model_config, f, default_flow_style=False)
 
-    model = Shufflenet_v205(num_classes=9)
+    models_module = getattr(import_module("torchvision.models"), model_name)
+    if from_pretrained == "True":
+        model = models_module(pretrained=True)
+        log_name += "_True"
+    elif from_pretrained == "False":
+        model = models_module(pretrained=False)
+        log_name += "_False"
+    model.add_module("last_linear", torch.nn.Linear(1000, 9))
     model_path = os.path.join(log_dir, "best.pt")
     print(f"Model save path: {model_path}")
     if os.path.isfile(model_path):
@@ -85,7 +107,10 @@ def train_pretrained(
 
     # Create trainer
     trainer = TorchTrainer(
+        model_name=model_name,
         model=model,
+        model_macs=macs,
+        log_name=log_name,
         criterion=criterion,
         optimizer=optimizer,
         scheduler=scheduler,
@@ -124,16 +149,26 @@ if __name__ == "__main__":
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    for model_name in model_list:
+            for from_pretrained in ("True", "False"):
+                try:
+                    now_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                    log_name = f"{model_name}_{now_str}"
+                    log_dir = os.path.join('exp', f"{model_name}_{now_str}")
+                    os.makedirs(log_dir, exist_ok=True)
 
-    now_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    log_name = f"shufflenet_v2_x0_5_{now_str}"
-    log_dir = os.path.join('exp', f"shufflenet_v2_x0_5_{now_str}")
-    os.makedirs(log_dir, exist_ok=True)
-
-    test_loss, test_f1, test_acc = train_pretrained(
-        model_config=model_config,
-        data_config=data_config,
-        log_dir=log_dir,
-        fp16=data_config["FP16"],
-        device=device,
-    )
+                    test_loss, test_f1, test_acc = train_pretrained(
+                        model_name=model_name,
+                        from_pretrained=from_pretrained,
+                        log_name=log_name,
+                        model_config=model_config,
+                        data_config=data_config,
+                        log_dir=log_dir,
+                        fp16=data_config["FP16"],
+                        device=device,
+                    )
+                except NotImplementedError as e:
+                    print(model_name, from_pretrained)
+                    print(e)
+                except:
+                    print(f"cant do with model {model_name}")
