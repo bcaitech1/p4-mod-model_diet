@@ -13,6 +13,10 @@ from src.modules.invertedresidualv2 import (
     InvertedResidualv2,
     InvertedResidualv2Generator,
 )
+from src.modules.invertedresidual import (
+    InvertedResidual,
+    InvertedResidualGenerator,
+)
 from src.modules.linear import Linear, LinearGenerator
 from src.modules.poolings import (
     AvgPoolGenerator,
@@ -29,6 +33,7 @@ __all__ = [
     "DWConv",
     "Linear",
     "GlobalAvgPool",
+    "InvertedResidual",
     "InvertedResidualv2",
     "InvertedResidualv3",
     "BottleneckGenerator",
@@ -40,6 +45,7 @@ __all__ = [
     "MaxPoolGenerator",
     "AvgPoolGenerator",
     "GlobalAvgPoolGenerator",
+    "InvertedResidualGenerator",
     "InvertedResidualv2Generator",
     "InvertedResidualv3Generator",
 ]
