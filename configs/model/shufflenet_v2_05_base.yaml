@@ -1,0 +1,28 @@
+input_channel: 3
+
+depth_multiple: 1.0
+width_multiple: 1.0
+
+backbone:
+    # [repeat, module, args]
+    [
+        # Conv argument: [out_channel, kernel_size, stride, padding_size]
+        # if padding_size is not given or null, the padding_size will be auto adjusted as padding='SAME' in TensorFlow
+        [1, Conv, [24, 3, 2, null, 1, "ReLU"]],
+        [1, MaxPool, [3, 2, 1]],
+        # InvertedResidualv3: k t c SE HS s
+        # InvertedResidual: kernel t c s
+        [1, InvertedResidual, [3, 1, 48, 2]],
+        [ 3, InvertedResidual, [ 3, 1, 48, 1 ] ],
+
+        [ 1, InvertedResidual, [ 3, 1, 96, 2 ] ],
+        [ 7, InvertedResidual, [ 3, 1, 96, 1 ] ],
+
+        [ 1, InvertedResidual, [ 3, 1, 192, 2 ] ],
+        [ 3, InvertedResidual, [ 3, 1, 192, 1 ] ],
+
+        [1, Conv, [1024, 1, 1, null, 1, "ReLU"]],
+        [1, GlobalAvgPool, []],
+        [1, Flatten, []],
+        [1, Linear, [9]]
+    ]
