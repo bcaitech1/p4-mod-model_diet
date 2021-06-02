@@ -12,7 +12,7 @@ from src.model import Model
 from src.augmentation.policies import simple_augment_test
 from src.utils.common import read_yaml
 from src.utils.inference_utils import run_model
-
+from tqdm import tqdm
 CLASSES = ['Battery', 'Clothing', 'Glass', 'Metal', 'Paper', 'Paperpack', 'Plastic', 'Plasticbag', 'Styrofoam']
 
 class CustomImageFolder(ImageFolder):
@@ -54,7 +54,7 @@ def inference(model, dataloader, dst_path: str):
     model = model.to(device)
     model.eval()
     submission_csv = {}
-    for img, _, fname in dataloader:
+    for img, _, fname in tqdm(dataloader):
         img = img.to(device)
         pred, enc_data = run_model(model, img)
         pred = torch.argmax(pred)
@@ -69,21 +69,11 @@ def inference(model, dataloader, dst_path: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Submit.")
-    parser.add_argument(
-        "--dst", default=".", type=str, help="destination path for submit"
-    )
-    parser.add_argument(
-        "--weight", required=True, type=str, help="model weight path"
-    )
-    parser.add_argument(
-        "--model_config", required=True, type=str, help="model config path"
-    )
-    parser.add_argument(
-        "--data_config", required=True, type=str, help="dataconfig used for training."
-    )
-    parser.add_argument(
-	"--img_root", required=True, type=str, help="image folder root. e.g) 'data/test'"
-    )
+    parser.add_argument("--dst", default=".", type=str, help="destination path for submit")
+    parser.add_argument("--weight", required=True, type=str, help="model weight path")
+    parser.add_argument("--model_config", required=True, type=str, help="model config path"    )
+    parser.add_argument("--data_config", required=True, type=str, help="dataconfig used for training.")
+    parser.add_argument("--img_root", required=True, type=str, help="image folder root. e.g) 'data/test'")
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -92,8 +82,14 @@ if __name__ == "__main__":
     dataloader = get_dataloader(img_root=args.img_root, data_config=args.data_config)
 
     # prepare model
-    model_instance = Model(args.model_config, verbose=True)
-    model_instance.model.load_state_dict(torch.load(args.weight, map_location=torch.device('cpu')))
-
+    model_instance = Model(args.model_config, verbose=False)
+    pretrained_state_dict = torch.load(args.weight, map_location=device)
+    keys_load = [x for x in pretrained_state_dict.keys()]
+    keys_load = {x:y for x,y in zip(keys_load, model_instance.model.state_dict().keys())}
+    for before, after in keys_load.items():
+        pretrained_state_dict[after] = pretrained_state_dict.pop(before)
+    model_instance.model.load_state_dict(pretrained_state_dict)
+    print("load_state_dict completed.")
     # inference
     inference(model_instance.model, dataloader, args.dst)
+    print('done.')

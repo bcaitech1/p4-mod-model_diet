@@ -3,6 +3,7 @@
 from src.modules.base_generator import GeneratorAbstract, ModuleGenerator
 from src.modules.bottleneck import Bottleneck, BottleneckGenerator
 from src.modules.conv import Conv, ConvGenerator, FixedConvGenerator
+from src.modules.CR import CR, CRGenerator, FixedCRGenerator
 from src.modules.dwconv import DWConv, DWConvGenerator
 from src.modules.flatten import FlattenGenerator
 from src.modules.invertedresidualv3 import (
@@ -26,6 +27,7 @@ __all__ = [
     "GeneratorAbstract",
     "Bottleneck",
     "Conv",
+    "CR",
     "DWConv",
     "Linear",
     "GlobalAvgPool",
