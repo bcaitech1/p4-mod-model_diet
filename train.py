@@ -14,7 +14,7 @@ import torch.nn as nn
 import torch.optim as optim
 
 from src.dataloader import create_dataloader
-from src.loss import CustomCriterion
+from src.loss import CustomCriterion, CosineAnnealingWarmupRestarts
 from src.model import Model
 from src.trainer import TorchTrainer
 from src.utils.common import get_label_counts, read_yaml
