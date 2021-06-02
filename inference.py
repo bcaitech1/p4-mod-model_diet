@@ -83,11 +83,12 @@ if __name__ == "__main__":
 
     # prepare model
     model_instance = Model(args.model_config, verbose=False)
-    pretrained_state_dict = torch.load(args.weight, map_location=device)
-    keys_load = [x for x in pretrained_state_dict.keys()]
-    keys_load = {x:y for x,y in zip(keys_load, model_instance.model.state_dict().keys())}
-    for before, after in keys_load.items():
-        pretrained_state_dict[after] = pretrained_state_dict.pop(before)
+    if torch.load(args.weight, map_location=device).keys() != model_instance.model.state_dict().keys():
+        pretrained_state_dict = torch.load(args.weight, map_location=device)
+        keys_load = [x for x in pretrained_state_dict.keys()]
+        keys_load = {x:y for x,y in zip(keys_load, model_instance.model.state_dict().keys())}
+        for before, after in keys_load.items():
+            pretrained_state_dict[after] = pretrained_state_dict.pop(before)
     model_instance.model.load_state_dict(pretrained_state_dict)
     print("load_state_dict completed.")
     # inference
