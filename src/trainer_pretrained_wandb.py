@@ -177,7 +177,10 @@ class TorchTrainer:
                     f"F1(macro): {f1_score(y_true=gt, y_pred=preds, labels=label_list, average='macro', zero_division=0):.2f}"
                 )
                 wandb.log({"Train/loss": (running_loss / (batch + 1)), "Train/accuracy": (correct / total) * 100})
-                wandb.log({"Hyper Parameters/lr": self.scheduler.get_last_lr()[0]})
+                if type(self.scheduler).__name__ == "CosineAnnealingWarmupRestarts":
+                    wandb.log({"Hyper Parameters/lr": self.scheduler.get_lr()[0]})
+                else:
+                    wandb.log({"Hyper Parameters/lr": self.scheduler.get_last_lr()[0]})
 
             pbar.close()
 
