@@ -103,7 +103,7 @@ class TorchTrainer:
         """
 
         self.model_name = model_name
-        wandb.init(project='pstage4_pretrained_2', reinit=True, name=log_name)
+
         self.model = model
         self.model_macs = model_macs
         self.model_path = model_path
@@ -113,7 +113,8 @@ class TorchTrainer:
         self.scaler = scaler
         self.verbose = verbose
         self.device = device
-
+        wandb.log({"Model/macs": model_macs})
+        wandb.log({"Model": model.__str__(), "macs": model_macs})
     def train(
         self,
         train_dataloader: DataLoader,
