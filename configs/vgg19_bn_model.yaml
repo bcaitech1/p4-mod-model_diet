@@ -1,0 +1,31 @@
+input_channel: 3
+
+depth_multiple: 1.0
+width_multiple: 1.0
+
+backbone:
+    # [repeat, module, args]
+    [
+        # Conv argument: 
+#         out_channels: output channels.
+#         kernel_size: kernel size.
+#         stride: stride.
+#         padding: 0 or null, If null is given, autopad is applied which is identical to padding='SAME' in TensorFlow.
+#         groups: 1, group convolution.
+#         activation: activation name. If None is given, nn.Identity is applied which is no activation.
+        [2, Conv, [64, 3, 1, null, 1, "ReLU"]],
+        [1, MaxPool, [2]],
+        [2, Conv, [128, 3, 1, null, 1, "ReLU"]],
+        [1, MaxPool, [2]],
+        [4, Conv, [256, 3, 1, null, 1, "ReLU"]],
+        [1, MaxPool, [2]],
+        [4, Conv, [512, 3, 1, null, 1, "ReLU"]],
+        [1, MaxPool, [2]],                
+        [4, Conv, [512, 3, 1, null, 1, "ReLU"]],
+        [1, MaxPool, [2]],
+        [1, CR, [4096, 7, 1, 0, 1, "ReLU"]],
+        [1, CR, [4096, 1, 1, 0, 1, "ReLU"]],
+        [1, GlobalAvgPool, []],
+        [1, Flatten, []],
+        [1, Linear, [9]]
+    ]
