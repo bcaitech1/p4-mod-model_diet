@@ -41,6 +41,8 @@ __all__ = [
     "BottleneckGenerator",
     "FixedConvGenerator",
     "ConvGenerator",
+    "FixedCRGenerator",
+    "CRGenerator",
     "LinearGenerator",
     "DWConvGenerator",
     "FlattenGenerator",
