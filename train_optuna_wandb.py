@@ -26,6 +26,15 @@ import wandb
 import pickle
 
 class Metric(object):
+    '''
+    평가 메트릭을 대회의 스코어와 동일하게 적용하기 위해 만들었습니다.
+    스코어를 계산하면서 wandb까지 기록할 수 있도록 만들었습니다.
+    baseline 코드는 train 함수 밖에서 macs를 계산하고 train 함수의 반환값으로 score를 계산하는 방식인데
+    wandb로 계속해서 기록을 남기려면 train 함수 안에서 에폭이 돌아갈 때마다 score를 계산해야 하기 때문에
+    구조를 크게 변화시키지 않고 깔끔하게 짜기 위해 고민한 결과 이렇게 class로 만들어서 인자로 넣어주는 방식을 택했습니다.
+    더 멋있는 방법이 있는지 모르겠네요...
+    '''
+
     def __init__(self, macs, wandb_run=None):
         self.macs = macs
         self.wandb_run = wandb_run
@@ -71,8 +80,30 @@ def train(
         model_instance = Model(model_config, verbose=True)
         model_path = os.path.join(log_dir, "best.pt")
         print(f"Model save path: {model_path}")
+
+        #for param_tensor in model_instance.model.state_dict():
+        #    print(param_tensor)
+
+        #for key, item in param_dict.items():
+        #    print(key)
+
+        '''
+        주석이 된 코드는 pretrained 모델의 weight를 사용하기 위해 만든 것입니다.
+        구조가 timm 라이브러리 모델과는 조금 달랐지만 비슷한 레이어끼리 이름을 맞춰서
+        억지로라도 weight를 적용시키면 성능이 향상될 줄 알았는데
+        별로 좋은 결과가 나오지 않았습니다.
+        '''
+
         if os.path.isfile(model_path):
             model_instance.model.load_state_dict(torch.load(model_path, map_location=device))
+        #else:
+        #    param_dict = torch.hub.load_state_dict_from_url(model_config['pretrained']['url'])
+        #    mapping_layer_name = model_config['pretrained']['mapping_layer_name']
+        #    for key, value in mapping_layer_name.items():
+        #        param_dict[value] = param_dict[key]
+        #        del param_dict[key]
+        #    model_instance.model.load_state_dict(param_dict, strict=False)
+                
         model_instance.model.to(device)
 
         # Create dataloader
@@ -124,6 +155,11 @@ def train(
         return best_score
 
 class Ready(object):
+    '''
+    optuna study에 넣어줄 클래스입니다.
+    train에서 score를 계산해서 반환한 걸 __call__으로 반환하도록 만들었는데
+    multi objective study를 쓰는 것과 차이가 없는 것 같기도 한데 뭐가 더 나은 방식인지는 모르겠습니다.
+    '''
     def __init__(self, model_config, data_config):
         self.model_config = model_config
         self.data_config = data_config
@@ -133,8 +169,9 @@ class Ready(object):
         pass
 
     def __call__(self, trial):
+
         #hyper parameter trial
-        self.data_config["IMG_SIZE"] = int(trial.suggest_discrete_uniform('img_size', 160, 384, 32))
+        self.data_config["IMG_SIZE"] = int(trial.suggest_discrete_uniform('img_size', 64, 160, 32))
         self.data_config["BATCH_SIZE"] = trial.suggest_categorical('batch_size', [8, 16, 32, 64])
         self.data_config["INIT_LR"] = trial.suggest_loguniform('lr', 1e-4, 1e-2)
 
@@ -144,7 +181,7 @@ class Ready(object):
             'batch_size':data_config['BATCH_SIZE'],
             'init_lr':data_config['INIT_LR'],
         }
-        wandb_run = wandb.init(project='optuna', name='trial', group='sampling3', config=config, reinit=True)
+        wandb_run = wandb.init(project='optuna', name='trial', group='sampling_sqeeze3', config=config, reinit=True)
         
         _, _, score = train(
             trial,
@@ -169,12 +206,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     model_config = read_yaml(cfg=args.model)
+    model_config = read_yaml(cfg="configs/model/example.yaml")
     data_config = read_yaml(cfg=args.data)
 
     ready = Ready(model_config, data_config)
     sampler = optuna.samplers.TPESampler()
     study = optuna.create_study(sampler=sampler, direction='minimize')
-    study.optimize(ready, n_trials=20)
+    study.optimize(ready, n_trials=200)
 
     summary = wandb.init(project='optuna', name='summary', job_type='logging')
     trials = study.trials
