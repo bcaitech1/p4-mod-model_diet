@@ -6,9 +6,89 @@
 ```bash
 docker run -it --gpus all --ipc=host -v $PWD:/opt/ml/code -v ${dataset}:/opt/ml/data placidus36/pstage4_lightweight:v0.1 /bin/bash
 ```
-
+# Tree
 ```tree
-
+|-- Diet.gif
+|-- Dockerfile
+|-- LICENSE.md
+|-- Makefile
+|-- README.md
+|-- configs
+|   |-- data
+|   |   |-- cifar10.yaml
+|   |   |-- no_model_1st_config.yaml
+|   |   |-- taco.yaml
+|   |   |-- taco_4_small_continue.yaml
+|   |   `-- taco_5_small_continue.yaml
+|   |-- model
+|   |   |-- example.yaml
+|   |   |-- mobilenetv3.yaml
+|   |   |-- mobilenetv3_goodmod.yaml
+|   |   |-- no_model_1st_model.yaml
+|   |   `-- shufflenet_v2_05_base.yaml
+|   |-- vgg19_bn_config.yaml
+|   `-- vgg19_bn_model.yaml
+|-- environment.yml
+|-- exp
+|-- gitests.txt
+|-- inference.py
+|-- model_EDA.ipynb
+|-- model_valid_score.ipynb
+|-- mypy.ini
+|-- shufflenet_v2_05_yaml.ipynb
+|-- src
+|   |-- __init__.py
+|   |-- augmentation
+|   |   |-- methods.py
+|   |   |-- policies.py
+|   |   `-- transforms.py
+|   |-- dataloader.py
+|   |-- decomposer.py
+|   |-- loss.py
+|   |-- model.py
+|   |-- model_forsave.py
+|   |-- modules
+|   |   |-- CR.py
+|   |   |-- __init__.py
+|   |   |-- activations.py
+|   |   |-- base_generator.py
+|   |   |-- bottleneck.py
+|   |   |-- conv.py
+|   |   |-- dwconv.py
+|   |   |-- flatten.py
+|   |   |-- invertedresidual.py
+|   |   |-- invertedresidualv2.py
+|   |   |-- invertedresidualv3.py
+|   |   |-- linear.py
+|   |   |-- mbconv.py
+|   |   `-- poolings.py
+|   |-- trainer.py
+|   |-- trainer_kd_t3_wandb.py
+|   |-- trainer_kd_wandb.py
+|   |-- trainer_pretrained_wandb.py
+|   `-- utils
+|       |-- common.py
+|       |-- data.py
+|       |-- inference_utils.py
+|       |-- macs.py
+|       |-- pytransform
+|       |   |-- __init__.py
+|       |   `-- _pytransform.so
+|       `-- torch_utils.py
+|-- tests
+|   `-- test_model_parser.py
+|-- train.py
+|-- train_knowdistill.py
+|-- train_knowdistill_efficientnetb4.py
+|-- train_knowdistill_efficientnetb4_shufflenetv250_decompose.py
+|-- train_knowdistill_efficientnetb4_shufflenetv250_decompose_VBMF.py
+|-- train_knowdistill_efficientnetb4amobilenetv3large_shufflenetv250_decompose.py
+|-- train_knowdistill_efficientnetb4amobilenetv3largeashufflenetv205.py
+|-- train_knowdistill_mobilenetv3.py
+|-- train_optuna.py
+|-- train_pretrained.py
+|-- train_wandb.py
+`-- tune_wandb.py
 ```
 
 # Run
