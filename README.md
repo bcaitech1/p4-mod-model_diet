@@ -2,6 +2,7 @@
 김연세, 윤석진, 이상건, 이용우, 한웅희, 황훈
 <br>
 <img src=https://github.com/bcaitech1/p4-mod-model_diet/blob/main/Diet.gif>
+![img.png](img/img.png)
 # Docker
 ```bash
 docker run -it --gpus all --ipc=host -v $PWD:/opt/ml/code -v ${dataset}:/opt/ml/data placidus36/pstage4_lightweight:v0.1 /bin/bash
@@ -116,7 +117,7 @@ python train_knowdistill_mobilenetv3.py \
 ```
 #### 1.2.3 teacher: efficientnet b4, moblienet v3 large, shufflenet v2 x0.5
 ```bash
-python train_knowdistill_efficientnetb4amobilenetv3largeashufflenetv205 \
+python train_knowdistill_efficientnetb4amobilenetv3largeashufflenetv205.py \
 --model ${path_to_model_config} \
 --data ${path_to_data_config} \
 --teacher1_pretrained ${path_to_teacher1_pretrained_weight} \
