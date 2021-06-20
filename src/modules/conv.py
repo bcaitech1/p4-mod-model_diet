@@ -7,7 +7,7 @@
 from typing import Union
 
 import torch
-from torch import nn as nn
+from torch import nn
 
 from src.modules.base_generator import GeneratorAbstract
 from src.utils.torch_utils import Activation, autopad
@@ -25,6 +25,7 @@ class Conv(nn.Module):
         padding: Union[int, None] = None,
         groups: int = 1,
         activation: Union[str, None] = "ReLU",
+        bias: bool = False,
     ) -> None:
         """Standard convolution with batch normalization and activation.
 
@@ -49,7 +50,7 @@ class Conv(nn.Module):
             stride,
             padding=autopad(kernel_size, padding),  # type: ignore
             groups=groups,
-            bias=False,
+            bias=bias,
         )
         self.bn = nn.BatchNorm2d(out_channels)
         self.act = Activation(activation)()

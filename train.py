@@ -14,13 +14,18 @@ import torch.nn as nn
 import torch.optim as optim
 
 from src.dataloader import create_dataloader
-from src.loss import CustomCriterion
+from src.loss import CustomCriterion, CosineAnnealingWarmupRestarts
 from src.model import Model
 from src.trainer import TorchTrainer
 from src.utils.common import get_label_counts, read_yaml
 from src.utils.macs import calc_macs
 from src.utils.torch_utils import check_runtime, model_info
-
+import adamp
+import timm
+class mymodel:
+    def __init__(self, model):
+        self.model = model
+    
 def train(
     model_config: Dict[str, Any],
     data_config: Dict[str, Any],
@@ -36,6 +41,8 @@ def train(
         yaml.dump(model_config, f, default_flow_style=False)
 
     model_instance = Model(model_config, verbose=True)
+    print(model_instance.model)
+#    timm.create_model(model_name='resnetv2_101x1_bitm',pretrained=True,num_classes=9)
     model_path = os.path.join(log_dir, "best.pt")
     print(f"Model save path: {model_path}")
     if os.path.isfile(model_path):
@@ -49,6 +56,8 @@ def train(
     macs = calc_macs(model_instance.model, (3, data_config["IMG_SIZE"], data_config["IMG_SIZE"]))
     print(f"macs: {macs}")
 
+    # sglee 브랜치 테스트.
+    # sglee487 브랜치 테스트.
     # Create optimizer, scheduler, criterion
     optimizer = torch.optim.SGD(model_instance.model.parameters(), lr=data_config["INIT_LR"], momentum=0.9)
                 # adamp.AdamP(model_instance.model.parameters(), lr=data_config["INIT_LR"], weight_decay = 1e-5)
